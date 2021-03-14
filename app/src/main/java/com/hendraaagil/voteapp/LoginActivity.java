@@ -3,11 +3,13 @@ package com.hendraaagil.voteapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -15,9 +17,9 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -82,13 +84,7 @@ public class LoginActivity extends AppCompatActivity {
 
         btnLogin.setOnClickListener(v -> {
             if (validate()) {
-                try {
-                    login();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                new MyTask().execute();
             }
         });
     }
@@ -107,32 +103,51 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
-    private void login() throws IOException, JSONException {
-        // URL for request
-        URL url = new URL("http://vote-server-side.herokuapp.com/login");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    public class MyTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                URL url = new URL("http://vote-server-side.herokuapp.com/login");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-        // Request method & set property like content-type, etc.
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-        connection.setDoInput(true);
-        connection.setDoOutput(true);
-        connection.connect();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Accept", "*/*");
+                connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 
-        // Object for POST into URL
-        JSONObject object = new JSONObject();
-        object.put("username", txtUsername.getText().toString());
-        object.put("password", txtPassword.getText().toString());
+                JSONObject object = new JSONObject();
+                object.put("username", txtUsername.getText().toString());
+                object.put("password", txtPassword.getText().toString());
 
-        // Sending request
-        OutputStream os = new BufferedOutputStream(connection.getOutputStream());
-        os.write(object.toString().getBytes());
-        os.flush();
+                OutputStream os = connection.getOutputStream();
+                byte[] input = object.toString().getBytes("utf=8");
+                os.write(input, 0, input.length);
 
-        InputStream is = connection.getInputStream();
-        System.out.println(is.toString());
+                BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
+                System.out.println(br.readLine());
 
-        os.close();
-        is.close();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(LoginActivity.this, "Login Berhasil", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(LoginActivity.this, "Username dan Password Tidak Cocok", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (JSONException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(LoginActivity.this, "JSON", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            return null;
+        }
     }
 }
