@@ -163,7 +163,7 @@ public class SignupActivity extends AppCompatActivity {
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
                 connection.setRequestMethod("POST");
-                connection.setRequestProperty("Accept", "*/*");
+                connection.setRequestProperty("Accept", "application/json");
                 connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 
                 JSONObject object = new JSONObject();
