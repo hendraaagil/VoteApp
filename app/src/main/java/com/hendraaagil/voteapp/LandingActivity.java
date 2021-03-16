@@ -12,17 +12,15 @@ import java.util.Date;
 import java.util.Locale;
 
 public class LandingActivity extends AppCompatActivity {
-    private Button btnLogin, btnDaftar;
-    private TextView txtVwDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
 
-        btnLogin = findViewById(R.id.btnLogin);
-        btnDaftar = findViewById(R.id.btnDaftar);
-        txtVwDate = findViewById(R.id.txtVwDate);
+        Button btnLogin = findViewById(R.id.btnLogin);
+        Button btnDaftar = findViewById(R.id.btnDaftar);
+        TextView txtVwDate = findViewById(R.id.txtVwDate);
 
         String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         txtVwDate.setText(date);

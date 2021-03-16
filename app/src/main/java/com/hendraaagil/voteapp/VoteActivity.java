@@ -19,7 +19,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class VoteActivity extends AppCompatActivity {
-    public String userId;
     private JSONObject user;
     private JSONArray candidates;
 
@@ -31,7 +30,7 @@ public class VoteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_vote);
 
         Intent intent = getIntent();
-        userId = intent.getStringExtra("userId");
+        String userId = intent.getStringExtra("userId");
 
         new MyTask("http://vote-server-side.herokuapp.com/users/" + userId).execute();
         new MySecondTask("http://vote-server-side.herokuapp.com/candidates").execute();
@@ -56,7 +55,7 @@ public class VoteActivity extends AppCompatActivity {
 
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String inputLine;
-                StringBuffer response = new StringBuffer();
+                StringBuilder response = new StringBuilder();
 
                 while ((inputLine = in.readLine()) != null) {
                     response.append(inputLine);
@@ -64,7 +63,6 @@ public class VoteActivity extends AppCompatActivity {
                 in.close();
 
                 user = new JSONObject(response.toString());
-                System.out.println(user);
             } catch (IOException | JSONException e) {
                 runOnUiThread(new Runnable() {
                     @Override
@@ -75,6 +73,16 @@ public class VoteActivity extends AppCompatActivity {
             }
 
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            try {
+                System.out.println(s);
+                txtVwHello.setText("Halo, " + user.get("fullName").toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -95,7 +103,7 @@ public class VoteActivity extends AppCompatActivity {
 
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String inputLine;
-                StringBuffer response = new StringBuffer();
+                StringBuilder response = new StringBuilder();
 
                 while ((inputLine = in.readLine()) != null) {
                     response.append(inputLine);
@@ -103,7 +111,6 @@ public class VoteActivity extends AppCompatActivity {
                 in.close();
 
                 candidates = new JSONArray(response.toString());
-                System.out.println(candidates);
             } catch (IOException | JSONException e) {
                 runOnUiThread(new Runnable() {
                     @Override

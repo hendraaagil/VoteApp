@@ -43,7 +43,6 @@ public class LoginActivity extends AppCompatActivity {
         txtPassword = findViewById(R.id.txtPasswordLogin);
         btnLogin = findViewById(R.id.btnLoginAct);
 
-
         txtVwDaftar.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, SignupActivity.class)));
 
         txtUsername.addTextChangedListener(new TextWatcher() {
