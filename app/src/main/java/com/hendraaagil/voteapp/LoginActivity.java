@@ -16,6 +16,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -84,7 +85,15 @@ public class LoginActivity extends AppCompatActivity {
 
         btnLogin.setOnClickListener(v -> {
             if (validate()) {
-                new MyTask().execute();
+                try {
+                    JSONObject object = new JSONObject();
+                    object.put("username", txtUsername.getText().toString());
+                    object.put("password", txtPassword.getText().toString());
+
+                    new MyTask("http://vote-server-side.herokuapp.com/login", object).execute();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -104,45 +113,51 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public class MyTask extends AsyncTask<Void, Void, Void> {
+        private String url;
+        private JSONObject json;
+
+        public MyTask(String url, JSONObject json) {
+            this.url = url;
+            this.json = json;
+        }
+
         @Override
         protected Void doInBackground(Void... voids) {
             try {
-                URL url = new URL("http://vote-server-side.herokuapp.com/login");
+                URL url = new URL(this.url);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
                 connection.setRequestMethod("POST");
-                connection.setRequestProperty("Accept", "*/*");
                 connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 
-                JSONObject object = new JSONObject();
-                object.put("username", txtUsername.getText().toString());
-                object.put("password", txtPassword.getText().toString());
-
                 OutputStream os = connection.getOutputStream();
-                byte[] input = object.toString().getBytes("utf=8");
+                byte[] input = this.json.toString().getBytes("utf=8");
                 os.write(input, 0, input.length);
 
                 BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
-                System.out.println(br.readLine());
+
+                JSONTokener jsonTokener = new JSONTokener(br.readLine());
+                JSONObject jsonObject = new JSONObject(jsonTokener);
+
+                String userId = jsonObject.get("user").toString();
+
+                System.out.println(userId);
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(LoginActivity.this, "Login Berhasil", Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(LoginActivity.this, VoteActivity.class);
+                        intent.putExtra("userId", userId);
+                        startActivity(intent);
                     }
                 });
-            } catch (IOException e) {
+            } catch (IOException | JSONException e) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(LoginActivity.this, "Username dan Password Tidak Cocok", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            } catch (JSONException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(LoginActivity.this, "JSON", Toast.LENGTH_SHORT).show();
                     }
                 });
             }

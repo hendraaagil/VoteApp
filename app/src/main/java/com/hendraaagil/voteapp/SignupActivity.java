@@ -163,7 +163,7 @@ public class SignupActivity extends AppCompatActivity {
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
                 connection.setRequestMethod("POST");
-                connection.setRequestProperty("Accept", "*/*");
+                connection.setRequestProperty("Accept", "application/json");
                 connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 
                 JSONObject object = new JSONObject();
@@ -182,6 +182,8 @@ public class SignupActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         Toast.makeText(SignupActivity.this, "Daftar Berhasil", Toast.LENGTH_SHORT).show();
+
+                        startActivity(new Intent(SignupActivity.this, LoginActivity.class));
                     }
                 });
             } catch (IOException e) {
