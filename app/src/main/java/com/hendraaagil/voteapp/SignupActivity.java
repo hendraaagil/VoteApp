@@ -182,6 +182,8 @@ public class SignupActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         Toast.makeText(SignupActivity.this, "Daftar Berhasil", Toast.LENGTH_SHORT).show();
+
+                        startActivity(new Intent(SignupActivity.this, LoginActivity.class));
                     }
                 });
             } catch (IOException e) {

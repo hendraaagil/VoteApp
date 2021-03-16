@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="36dp"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="24dp"
         android:fontFamily="@font/poppins_bold"
         android:text="Selamat Datang di\nE-Voting"
         android:textAlignment="center"
@@ -28,12 +28,11 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="36dp"
         android:layout_marginBottom="48dp"
-        android:fontFamily="@font/poppins_bold"
+        android:fontFamily="@font/poppins_regular"
         android:text="Date"
         android:textAlignment="center"
         android:textColor="@color/blue_700"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textSize="16sp"/>
 
     <ImageView
         android:layout_width="match_parent"

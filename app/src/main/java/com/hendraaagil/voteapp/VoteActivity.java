@@ -1,6 +1,8 @@
 package com.hendraaagil.voteapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -17,12 +19,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
-public class VoteActivity extends AppCompatActivity {
-    private JSONObject user;
-    private JSONArray candidates;
-
+public class VoteActivity extends AppCompatActivity implements CardAdapter.OnBtnDetailClick {
+    public JSONObject user;
+    public JSONArray candidates;
     private TextView txtVwHello;
+    public RecyclerView recyclerView;
+    public CardAdapter cardAdapter;
+    public ArrayList<ExampleCard> exampleCards = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +41,16 @@ public class VoteActivity extends AppCompatActivity {
         new MySecondTask("http://vote-server-side.herokuapp.com/candidates").execute();
 
         txtVwHello = findViewById(R.id.txtVwHello);
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    @Override
+    public void onBtnClick(int position) {
+        ExampleCard card = exampleCards.get(position);
+
+        System.out.println(card.getCandidateId());
     }
 
     public class MyTask extends AsyncTask<Void, Void, String> {
@@ -78,7 +93,6 @@ public class VoteActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             try {
-                System.out.println(s);
                 txtVwHello.setText("Halo, " + user.get("fullName").toString());
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -121,6 +135,29 @@ public class VoteActivity extends AppCompatActivity {
             }
 
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            try {
+                for (int i = 0; i < candidates.length(); i++) {
+                    JSONObject candidate = candidates.getJSONObject(i);
+
+                    String id = candidate.getString("_id");
+                    String imageUrl = candidate.getString("photoLink");
+                    String ketua = candidate.getString("leader");
+                    String wakil = candidate.getString("coLeader");
+                    int nomor = candidate.getInt("number");
+
+                    exampleCards.add(new ExampleCard(id, imageUrl, ketua, wakil, nomor));
+                }
+
+                cardAdapter = new CardAdapter(VoteActivity.this, exampleCards);
+                recyclerView.setAdapter(cardAdapter);
+                cardAdapter.setOnDetailClick(VoteActivity.this);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
