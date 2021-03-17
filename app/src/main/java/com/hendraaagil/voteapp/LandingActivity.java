@@ -25,12 +25,8 @@ public class LandingActivity extends AppCompatActivity {
         String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         txtVwDate.setText(date);
 
-        btnLogin.setOnClickListener(v -> {
-            startActivity(new Intent(LandingActivity.this, LoginActivity.class));
-        });
+        btnLogin.setOnClickListener(v -> startActivity(new Intent(LandingActivity.this, LoginActivity.class)));
 
-        btnDaftar.setOnClickListener(v -> {
-            startActivity(new Intent(LandingActivity.this, SignupActivity.class));
-        });
+        btnDaftar.setOnClickListener(v -> startActivity(new Intent(LandingActivity.this, SignupActivity.class)));
     }
 }

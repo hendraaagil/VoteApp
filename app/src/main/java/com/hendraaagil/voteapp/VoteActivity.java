@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -53,6 +54,7 @@ public class VoteActivity extends AppCompatActivity implements CardAdapter.OnBtn
         System.out.println(card.getCandidateId());
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class MyTask extends AsyncTask<Void, Void, String> {
         private String url;
 
@@ -79,17 +81,13 @@ public class VoteActivity extends AppCompatActivity implements CardAdapter.OnBtn
 
                 user = new JSONObject(response.toString());
             } catch (IOException | JSONException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(VoteActivity.this, "Gagal", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                runOnUiThread(() -> Toast.makeText(VoteActivity.this, "Gagal", Toast.LENGTH_SHORT).show());
             }
 
             return null;
         }
 
+        @SuppressLint("SetTextI18n")
         @Override
         protected void onPostExecute(String s) {
             try {
@@ -100,6 +98,7 @@ public class VoteActivity extends AppCompatActivity implements CardAdapter.OnBtn
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class MySecondTask extends AsyncTask<Void, Void, String> {
         private String url;
 
@@ -126,12 +125,7 @@ public class VoteActivity extends AppCompatActivity implements CardAdapter.OnBtn
 
                 candidates = new JSONArray(response.toString());
             } catch (IOException | JSONException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(VoteActivity.this, "Gagal", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                runOnUiThread(() -> Toast.makeText(VoteActivity.this, "Gagal", Toast.LENGTH_SHORT).show());
             }
 
             return null;

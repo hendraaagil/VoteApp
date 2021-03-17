@@ -2,6 +2,7 @@ package com.hendraaagil.voteapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class LoginActivity extends AppCompatActivity {
     TextView txtVwDaftar;
@@ -112,6 +114,7 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class MyTask extends AsyncTask<Void, Void, Void> {
         private String url;
         private JSONObject json;
@@ -134,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
                 byte[] input = this.json.toString().getBytes("utf=8");
                 os.write(input, 0, input.length);
 
-                BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
+                BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
 
                 JSONTokener jsonTokener = new JSONTokener(br.readLine());
                 JSONObject jsonObject = new JSONObject(jsonTokener);
@@ -143,23 +146,15 @@ public class LoginActivity extends AppCompatActivity {
 
                 System.out.println(userId);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(LoginActivity.this, "Login Berhasil", Toast.LENGTH_SHORT).show();
+                runOnUiThread(() -> {
+                    Toast.makeText(LoginActivity.this, "Login Berhasil", Toast.LENGTH_SHORT).show();
 
-                        Intent intent = new Intent(LoginActivity.this, VoteActivity.class);
-                        intent.putExtra("userId", userId);
-                        startActivity(intent);
-                    }
+                    Intent intent = new Intent(LoginActivity.this, VoteActivity.class);
+                    intent.putExtra("userId", userId);
+                    startActivity(intent);
                 });
             } catch (IOException | JSONException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(LoginActivity.this, "Username dan Password Tidak Cocok", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Username dan Password Tidak Cocok", Toast.LENGTH_SHORT).show());
             }
 
             return null;

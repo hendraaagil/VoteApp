@@ -2,6 +2,7 @@ package com.hendraaagil.voteapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class SignupActivity extends AppCompatActivity {
     TextView txtVwLogin;
@@ -155,6 +157,7 @@ public class SignupActivity extends AppCompatActivity {
         return true;
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class MyTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
@@ -175,31 +178,18 @@ public class SignupActivity extends AppCompatActivity {
                 byte[] input = object.toString().getBytes("utf=8");
                 os.write(input, 0, input.length);
 
-                BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
+                BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
                 System.out.println(br.readLine());
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(SignupActivity.this, "Daftar Berhasil", Toast.LENGTH_SHORT).show();
+                runOnUiThread(() -> {
+                    Toast.makeText(SignupActivity.this, "Daftar Berhasil", Toast.LENGTH_SHORT).show();
 
-                        startActivity(new Intent(SignupActivity.this, LoginActivity.class));
-                    }
+                    startActivity(new Intent(SignupActivity.this, LoginActivity.class));
                 });
             } catch (IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(SignupActivity.this, "Username sudah terdaftar", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                runOnUiThread(() -> Toast.makeText(SignupActivity.this, "Username sudah terdaftar", Toast.LENGTH_SHORT).show());
             } catch (JSONException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(SignupActivity.this, "JSON", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                runOnUiThread(() -> Toast.makeText(SignupActivity.this, "JSON", Toast.LENGTH_SHORT).show());
             }
 
             return null;
